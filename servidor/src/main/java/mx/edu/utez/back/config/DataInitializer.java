@@ -156,6 +156,7 @@ public class DataInitializer {
                         product.setDescription(descriptions[i]);
                         product.setPrice(prices[i]);
                         product.setStock(stocks[i]);
+                        product.setAvailable(true);
                         productRepo.save(product);
                         System.out.println("   ✅ " + productNames[i] + " ($" + prices[i] + ") [" + skus[i] + "]");
                     }
