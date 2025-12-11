@@ -1,0 +1,10 @@
+
+# Valid for a Maven/Spring Boot project
+target/
+*.class
+.idea/
+*.iml
+*.log
+
+# Firebase Service Account Credentials
+src/main/resources/tiendas-ucq-firebase-adminsdk-fbsvc-*.json

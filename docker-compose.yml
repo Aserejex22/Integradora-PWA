@@ -1,0 +1,49 @@
+services:
+  database:
+    image: mysql:8
+    container_name: db-integradora
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: integradora_pwa
+    ports:
+      - "3306:3306"
+    networks:
+      - integradora-net
+    volumes:
+      - integradora-data:/var/lib/mysql
+
+  frontend:
+    image: client:integradora-v1
+    container_name: fe-integradora
+    build:
+      context: ./cliente
+    ports:
+      - "80:80"
+    networks:
+      - integradora-net
+
+  backend:
+    image: services:integradora-v1
+    container_name: be-integradora
+    build:
+      context: ./servidor
+    environment:
+      SERVER_PORT: 8080
+      DB_URL: jdbc:mysql://database:3306/integradora_pwa
+      DB_USER: root
+      DB_PASSWORD: root
+      JWT_SECRET: IntegradoraPWA-SecretKey-2024-MySQL
+    ports:
+      - "8080:8080"
+    networks:
+      - integradora-net
+    depends_on:
+      - database
+
+networks:
+  integradora-net:
+    external: true
+
+volumes:
+  integradora-data:
+    external: true
