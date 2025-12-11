@@ -34,7 +34,7 @@ services:
       DB_PASSWORD: root
       JWT_SECRET: IntegradoraPWA-SecretKey-2024-MySQL
     ports:
-      - "8080:8080"
+      - "8081:8080"
     networks:
       - integradora-net
     depends_on:
