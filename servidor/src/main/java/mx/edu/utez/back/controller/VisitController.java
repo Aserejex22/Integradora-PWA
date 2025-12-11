@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/visits")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class VisitController {
     private final VisitService visitService;
 

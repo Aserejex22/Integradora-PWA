@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
     private final UserService userService;
 
@@ -37,6 +38,12 @@ public class UserController {
     @PostMapping("/{userId}/assign-store/{storeId}")
     public ResponseEntity<User> assignStore(@PathVariable Long userId, @PathVariable Long storeId) {
         return ResponseEntity.ok(userService.assignStore(userId, storeId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
+        user.setId(id);
+        return ResponseEntity.ok(userService.create(user));
     }
 
     @DeleteMapping("/{id}")

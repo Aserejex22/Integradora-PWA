@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/stores")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class StoreController {
     private final StoreService storeService;
 
@@ -30,6 +31,13 @@ public class StoreController {
     @GetMapping
     public ResponseEntity<List<Store>> list() {
         return ResponseEntity.ok(storeService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Store> getById(@PathVariable Long id) {
+        Optional<Store> store = storeService.findById(id);
+        return store.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/by-code/{code}")

@@ -29,12 +29,11 @@ public class AdminController {
         try {
             System.out.println("--- MANUAL TRIGGER: INICIANDO CARGA DE USUARIOS ---");
 
-            // 1. Verificar si ya existen para no duplicar (basado en email es mejor, pero
-            // por ahora count/empty)
+            // 1. Verificar si ya existen para no duplicar
             List<User> existingUsers = userRepo.findAll();
             if (!existingUsers.isEmpty()) {
                 return ResponseEntity.badRequest().body(
-                        "Error: Ya existen usuarios en la base de datos. Borra la colección 'users' en Firebase si quieres reiniciar.");
+                        "Error: Ya existen usuarios en la base de datos. Borra la tabla 'users' en MySQL si quieres reiniciar.");
             }
 
             // 1. ADMIN
