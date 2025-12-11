@@ -43,7 +43,7 @@ public class AdminController {
             admin.setEmail("admin@example.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole(Role.ADMIN);
-            userRepo.save(admin, null);
+            userRepo.save(admin);
 
             // 2. REPARTIDOR 1
             User repartidor = new User();
@@ -51,7 +51,7 @@ public class AdminController {
             repartidor.setEmail("rep1@example.com");
             repartidor.setPassword(passwordEncoder.encode("rep123"));
             repartidor.setRole(Role.REPARTIDOR);
-            userRepo.save(repartidor, null);
+            userRepo.save(repartidor);
 
             // 3. REPARTIDOR 2
             User repartidor2 = new User();
@@ -59,7 +59,7 @@ public class AdminController {
             repartidor2.setEmail("rep2@example.com");
             repartidor2.setPassword(passwordEncoder.encode("rep123"));
             repartidor2.setRole(Role.REPARTIDOR);
-            userRepo.save(repartidor2, null);
+            userRepo.save(repartidor2);
 
             return ResponseEntity.ok("Usuarios creados exitosamente! Credenciales: admin@example.com / admin123");
 

@@ -23,7 +23,7 @@ public class DataInitializer {
                 List<User> existingUsers = userRepo.findAll();
                 if (existingUsers.isEmpty()) {
                     System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-                    System.out.println("🚀 INICIANDO CARGA DE DATOS DE PRUEBA (FIRESTORE)");
+                    System.out.println("🚀 INICIANDO CARGA DE DATOS DE PRUEBA (JPA/SQL)");
                     System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
                     // ═══════════════════════════════════════════════════
@@ -39,8 +39,8 @@ public class DataInitializer {
                     store1.setPhone("5551234567");
                     store1.setLatitude(19.432608);
                     store1.setLongitude(-99.133209);
-                    String store1Id = storeRepo.save(store1, null);
-                    store1.setId(store1Id);
+                    store1 = storeRepo.save(store1);
+                    Long store1Id = store1.getId();
                     System.out.println("   ✅ " + store1.getName() + " (ID: " + store1Id + ")");
 
                     Store store2 = new Store();
@@ -51,8 +51,8 @@ public class DataInitializer {
                     store2.setPhone("5559876543");
                     store2.setLatitude(19.433333);
                     store2.setLongitude(-99.191111);
-                    String store2Id = storeRepo.save(store2, null);
-                    store2.setId(store2Id);
+                    store2 = storeRepo.save(store2);
+                    Long store2Id = store2.getId();
                     System.out.println("   ✅ " + store2.getName() + " (ID: " + store2Id + ")");
 
                     Store store3 = new Store();
@@ -63,8 +63,8 @@ public class DataInitializer {
                     store3.setPhone("5552223344");
                     store3.setLatitude(19.434444);
                     store3.setLongitude(-99.144444);
-                    String store3Id = storeRepo.save(store3, null);
-                    store3.setId(store3Id);
+                    store3 = storeRepo.save(store3);
+                    Long store3Id = store3.getId();
                     System.out.println("   ✅ " + store3.getName() + " (ID: " + store3Id + ")");
 
                     // ═══════════════════════════════════════════════════
@@ -78,8 +78,7 @@ public class DataInitializer {
                     admin.setEmail("admin@example.com");
                     admin.setPassword(passwordEncoder.encode("admin123"));
                     admin.setRole(Role.ADMIN);
-                    String adminId = userRepo.save(admin, null);
-                    admin.setId(adminId);
+                    admin = userRepo.save(admin);
                     System.out.println("   ✅ ADMIN: " + admin.getEmail() + " / admin123");
 
                     // 2. REPARTIDOR 1 - Asignado a Tienda 1
@@ -89,8 +88,7 @@ public class DataInitializer {
                     repartidor1.setPassword(passwordEncoder.encode("rep123"));
                     repartidor1.setRole(Role.REPARTIDOR);
                     repartidor1.setMainStoreId(store1Id); // ✨ ASIGNACIÓN DE TIENDA
-                    String rep1Id = userRepo.save(repartidor1, null);
-                    repartidor1.setId(rep1Id);
+                    repartidor1 = userRepo.save(repartidor1);
                     System.out.println("   ✅ REPARTIDOR 1: " + repartidor1.getEmail() + " / rep123");
                     System.out.println("      → Asignado a: " + store1.getName());
 
@@ -101,8 +99,7 @@ public class DataInitializer {
                     repartidor2.setPassword(passwordEncoder.encode("rep123"));
                     repartidor2.setRole(Role.REPARTIDOR);
                     repartidor2.setMainStoreId(store2Id); // ✨ ASIGNACIÓN DE TIENDA
-                    String rep2Id = userRepo.save(repartidor2, null);
-                    repartidor2.setId(rep2Id);
+                    repartidor2 = userRepo.save(repartidor2);
                     System.out.println("   ✅ REPARTIDOR 2: " + repartidor2.getEmail() + " / rep123");
                     System.out.println("      → Asignado a: " + store2.getName());
 
@@ -113,8 +110,7 @@ public class DataInitializer {
                     repartidor3.setPassword(passwordEncoder.encode("rep123"));
                     repartidor3.setRole(Role.REPARTIDOR);
                     // mainStoreId = null (sin asignación)
-                    String rep3Id = userRepo.save(repartidor3, null);
-                    repartidor3.setId(rep3Id);
+                    repartidor3 = userRepo.save(repartidor3);
                     System.out.println("   ✅ REPARTIDOR 3: " + repartidor3.getEmail() + " / rep123");
                     System.out.println("      → Sin tienda asignada (para pruebas)");
 
@@ -160,7 +156,7 @@ public class DataInitializer {
                         product.setDescription(descriptions[i]);
                         product.setPrice(prices[i]);
                         product.setStock(stocks[i]);
-                        productRepo.save(product, null);
+                        productRepo.save(product);
                         System.out.println("   ✅ " + productNames[i] + " ($" + prices[i] + ") [" + skus[i] + "]");
                     }
 

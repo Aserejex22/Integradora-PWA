@@ -37,7 +37,7 @@ public class MigrationController {
                         }
                     }
                     order.setTotalPrice(total);
-                    orderRepository.save(order, order.getId());
+                    orderRepository.save(order);
                     updated++;
                 }
             }
