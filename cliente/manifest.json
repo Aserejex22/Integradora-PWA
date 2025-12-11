@@ -1,0 +1,25 @@
+{
+  "name": "Tienda UCQ - Sistema de Pedidos",
+  "short_name": "Tienda UCQ",
+  "description": "Aplicación de gestión de pedidos, tiendas y entregas",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/img/192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

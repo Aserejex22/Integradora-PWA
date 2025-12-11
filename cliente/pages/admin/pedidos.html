@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="manifest" href="/TiendaPWA-front/manifest.json">
+  <link rel="apple-touch-icon" href="/TiendaPWA-front/img/192.png">
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/TiendaPWA-front/css/admin.css">
+
+  <title>Gestión de Pedidos</title>
+</head>
+
+<body>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <i class="bi bi-truck" style="font-size: 1.5rem;"></i>
+      <h4>Tienda UCQ</h4>
+    </div>
+    <div class="sidebar-menu">
+      <a href="/TiendaPWA-front/pages/admin/dashboard.html">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/TiendaPWA-front/pages/admin/pedidos.html" class="active">
+        <i class="bi bi-box-seam"></i>
+        <span>Pedidos</span>
+      </a>
+      <a href="/TiendaPWA-front/pages/admin/productos.html">
+        <i class="bi bi-box"></i>
+        <span>Productos</span>
+      </a>
+      <a href="/TiendaPWA-front/pages/admin/tiendas.html">
+        <i class="bi bi-shop"></i>
+        <span>Tiendas</span>
+      </a>
+      <a href="/TiendaPWA-front/pages/admin/repartidores.html">
+        <i class="bi bi-person-badge"></i>
+        <span>Repartidores</span>
+      </a>
+      <a href="/TiendaPWA-front/pages/admin/notificaciones.html">
+        <i class="bi bi-bell"></i>
+        <span>Notificaciones</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="topbar">
+      <h2 class="mb-0">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <i class="bi bi-box-seam"></i> Gestión de Pedidos
+      </h2>
+      <div>
+        <span class="badge bg-info me-3" id="user-badge">Admin</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </button>
+      </div>
+    </div>
+
+    <div class="container-fluid p-4">
+      <div id="message-container"></div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="search-input" placeholder="Buscar pedido...">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="status-filter">
+                <option value="all">Todos los estados</option>
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="EN_PROCESO">En proceso</option>
+                <option value="COMPLETADO">Completado</option>
+                <option value="CANCELADO">Cancelado</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <input type="date" class="form-control" id="date-filter">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <!-- <th scope="col" class="ps-4">ID</th> -->
+                <th scope="col">Cliente</th>
+                <th scope="col">Tienda</th>
+                <th scope="col">Total</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Fecha</th>
+                <th scope="col" class="text-end pe-4">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="pedidos-table-body">
+              <tr>
+                <td colspan="7" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2 text-muted">Cargando pedidos...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="modal fade" id="detalleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold">Detalles del Pedido</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <h2 class="mb-0 text-primary" id="detalle-total">$0.00</h2>
+              <span class="badge bg-secondary mt-1" id="detalle-estado">STATUS</span>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <h5 class="mb-0 text-muted">Pedido #<span id="detalle-id" class="text-dark">0</span></h5>
+              <small class="text-muted" id="detalle-fecha">Fecha</small>
+            </div>
+          </div>
+
+          <div class="card bg-light border-0 mb-4">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <small class="text-muted text-uppercase fw-bold d-block">Cliente</small>
+                  <span class="fw-bold fs-5" id="detalle-cliente">Nombre</span>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <small class="text-muted text-uppercase fw-bold d-block">Tienda de Retiro</small>
+                  <span class="fw-bold fs-5" id="detalle-tienda">Tienda</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h6 class="text-muted text-uppercase small fw-bold mb-3 ms-1">Artículos del Pedido</h6>
+          <div class="table-responsive border rounded">
+            <table class="table table-sm table-striped mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-3">Producto</th>
+                  <th class="text-end">Cant.</th>
+                  <th class="text-end">Precio U.</th>
+                  <th class="text-end pe-3">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody id="detalle-items-body">
+                <tr>
+                  <td colspan="4" class="text-center py-3 text-muted">Cargando...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer border-0 bg-light">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toast-message"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/TiendaPWA-front/js/api.js"></script>
+  <script src="/TiendaPWA-front/js/app.js"></script>
+  <script src="/TiendaPWA-front/js/offline.js"></script>
+
+  <script>
+    let allOrders = [];
+
+    function checkAuth() {
+      if (localStorage.getItem('user_role') !== 'admin' && localStorage.getItem('user_role') !== 'ADMIN') {
+        window.location.href = '/TiendaPWA-front/login.html';
+      }
+      document.getElementById('user-badge').textContent = localStorage.getItem('user_name') || 'Admin';
+    }
+
+    function logout() { localStorage.clear(); window.location.href = '/TiendaPWA-front/login.html'; }
+
+    function getBadgeClass(status) {
+      switch (status) {
+        case 'PENDIENTE': return 'bg-secondary';
+        case 'EN_PROCESO': return 'bg-warning text-dark';
+        case 'COMPLETADO': return 'bg-success';
+        case 'CANCELADO': return 'bg-danger';
+        default: return 'bg-info';
+      }
+    }
+
+    // --- CARGA DE DATOS ---
+
+    async function fetchOrders() {
+      const tbody = document.getElementById('pedidos-table-body');
+      try {
+        allOrders = await OrderAPI.list();
+        renderTable(allOrders);
+      } catch (error) {
+        console.error('Error:', error);
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Error al cargar datos.</td></tr>`;
+      }
+    }
+
+
+
+    // --- RENDERIZADO DE TABLA ---
+
+    function renderTable(orders) {
+      const tbody = document.getElementById('pedidos-table-body');
+      tbody.innerHTML = '';
+
+      if (orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted">No hay pedidos registrados.</td></tr>`;
+        return;
+      }
+
+      orders.forEach(order => {
+        const row = document.createElement('tr');
+        const badgeClass = getBadgeClass(order.status);
+        const orderJson = JSON.stringify(order).replace(/'/g, "\\'");
+
+        row.innerHTML = `
+                <!-- <td class="ps-4 fw-bold text-muted">#${order.id}</td> -->
+                <td><span class="fw-bold text-dark">${order.clientName || 'Anónimo'}</span></td>
+                <td>${order.store?.name || 'Tienda ' + (order.store?.id || '?')}</td>
+                <td class="fw-bold text-primary">$${(order.totalPrice || 0).toFixed(2)}</td>
+                <td><span class="badge ${badgeClass} rounded-pill">${order.status}</span></td>
+                <td class="text-muted small">${new Date(order.createdAt || Date.now()).toLocaleDateString()}</td>
+                <td class="text-end pe-4">
+                    <button class="btn btn-sm btn-outline-info me-1" onclick='verDetalle(${orderJson})' title="Ver Detalles">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="eliminar('${order.id}')" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // --- DETALLES ---
+
+    function verDetalle(order) {
+      document.getElementById('detalle-id').textContent = order.id;
+      document.getElementById('detalle-cliente').textContent = order.clientName || 'Anónimo';
+      document.getElementById('detalle-tienda').textContent = order.store?.name || 'N/A';
+      document.getElementById('detalle-total').textContent = `$${(order.totalPrice || 0).toFixed(2)}`;
+      document.getElementById('detalle-estado').textContent = order.status;
+
+      const badge = document.getElementById('detalle-estado');
+      badge.className = `badge ${getBadgeClass(order.status)} mt-1`;
+
+      document.getElementById('detalle-fecha').textContent = new Date(order.createdAt || Date.now()).toLocaleString();
+
+      const itemsBody = document.getElementById('detalle-items-body');
+      itemsBody.innerHTML = '';
+
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          const row = `
+            <tr>
+                <td class="ps-3">
+                    <div class="fw-bold">${item.product?.name || 'Item'}</div>
+                    <small class="text-muted">${item.product?.sku || ''}</small>
+                </td>
+                <td class="text-end">${item.quantity}</td>
+                <td class="text-end text-muted">$${(item.price || 0).toFixed(2)}</td>
+                <td class="text-end pe-3 fw-bold">$${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</td>
+            </tr>
+          `;
+          itemsBody.insertAdjacentHTML('beforeend', row);
+        });
+      } else {
+        itemsBody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-muted">Sin artículos registrados</td></tr>';
+      }
+
+      new bootstrap.Modal(document.getElementById('detalleModal')).show();
+    }
+
+    // --- ELIMINAR ---
+
+    async function eliminar(id) {
+      const result = await Swal.fire({
+        title: '¿Eliminar pedido?',
+        text: "Esta acción no se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminar'
+      });
+
+      if (result.isConfirmed) {
+        try {
+          await OrderAPI.delete(id);
+          showToast('Pedido eliminado.', 'success');
+          allOrders = allOrders.filter(o => o.id != id);
+          renderTable(allOrders);
+        } catch (error) {
+          showToast('No se pudo eliminar.', 'danger');
+        }
+      }
+    }
+
+    // --- FILTROS ---
+
+    function filterOrders() {
+      const term = document.getElementById('search-input').value.toLowerCase();
+      const status = document.getElementById('status-filter').value;
+      const date = document.getElementById('date-filter').value;
+
+      const filtered = allOrders.filter(o => {
+        const matchesTerm = (o.clientName && o.clientName.toLowerCase().includes(term)) || o.id.toString().includes(term);
+        const matchesStatus = status === 'all' || o.status === status;
+
+        let matchesDate = true;
+        if (date) {
+          const orderDate = new Date(o.createdAt).toISOString().split('T')[0];
+          matchesDate = orderDate === date;
+        }
+
+        return matchesTerm && matchesStatus && matchesDate;
+      });
+      renderTable(filtered);
+    }
+
+    document.getElementById('search-input').addEventListener('input', filterOrders);
+    document.getElementById('status-filter').addEventListener('change', filterOrders);
+    document.getElementById('date-filter').addEventListener('change', filterOrders);
+
+    function showToast(msg, type) {
+      const el = document.getElementById('liveToast');
+      const body = document.getElementById('toast-message');
+      el.className = `toast align-items-center text-white border-0 bg-${type}`;
+      body.textContent = msg;
+      new bootstrap.Toast(el).show();
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      fetchOrders();
+    });
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.querySelector('.sidebar-overlay').classList.toggle('active');
+    }
+  </script>
+</body>
+
+</html>
