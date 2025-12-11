@@ -9,11 +9,12 @@ pipeline {
         stage('Stopping services') {
             steps {
                 sh '''
-                    docker compose -p integradora down || true
+                    docker compose -p integradora down --remove-orphans || true
                 '''
             }
         }
 
+        // Esta etapa realmente es opcional, solo si quieres limpiar imágenes viejas
         stage('Deleting old images') {
             steps{
                 sh '''
@@ -34,7 +35,7 @@ pipeline {
         stage('Building new images') {
             steps {
                 sh '''
-                    docker compose build --no-cache
+                    docker compose -p integradora build --no-cache
                 '''
             }
         }
@@ -42,7 +43,7 @@ pipeline {
         stage('Deploying containers') {
             steps {
                 sh '''
-                    docker compose up -d
+                    docker compose -p integradora up -d
                 '''
             }
         }
@@ -54,7 +55,7 @@ pipeline {
         }
 
         failure {
-            echo 'An error occurred during pipeline execution, check the logs of the stage for mor information.'
+            echo 'An error occurred during pipeline execution, check the logs of the stage for more information.'
         }
     }
 }
